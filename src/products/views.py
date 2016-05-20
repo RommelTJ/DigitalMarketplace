@@ -10,7 +10,7 @@ def detail_view(request, object_id=None):
         "object": product,
     }
     return render(request, template, context)
-    
+
 def list_view(request):
     #list of items
     print(request.user)
