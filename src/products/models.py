@@ -9,16 +9,27 @@ from django.utils.text import slugify
 class Product(models.Model):
     title = models.CharField(max_length=30)
     slug = models.SlugField(blank=True, unique=True)
-    description = models.TextField(default="")
+    description = models.TextField()
     price = models.DecimalField(max_digits=100, decimal_places=2, default=9.99)
     sale_price = models.DecimalField(max_digits=100, decimal_places=2, default=6.99, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
 
+def create_slug(instance, new_slug=None):
+    slug = slugify(instance.title)
+    if new_slug is not None:
+        slug = new_slug
+    qs = Product.objects.filter(slug=slug)
+    exists = qs.exists()
+    if exists:
+        new_slug = "%s - %s" %(slug, qs.first().id)
+        return create_slug(instance, new_slug=new_slug)
+    return slug
+
 def product_pre_save_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
-        instance.slug = slugify(instance.title)
+        instance.slug = create_slug(instance)
 
 pre_save.connect(product_pre_save_receiver, sender=Product)
 

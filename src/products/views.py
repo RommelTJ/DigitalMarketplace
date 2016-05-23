@@ -1,22 +1,35 @@
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+
+from digitalmarketplace.mixins import MultiSlugMixin, SubmitButtonMixin
 from models import Product
 from forms import ProductAddForm, ProductModelForm
 
+class ProductCreateView(SubmitButtonMixin, CreateView):
+    model = Product
+    template_name = "form.html"
+    form_class = ProductModelForm
+    success_url = "/products/add/"
+    submit_button = "Add Product"
+
+class ProductUpdateView(SubmitButtonMixin, MultiSlugMixin, UpdateView):
+    model = Product
+    template_name = "form.html"
+    form_class = ProductModelForm
+    success_url = "/products/"
+    submit_button = "Update Product"
+
+class ProductDetailView(MultiSlugMixin, DetailView):
+    model = Product
 
 class ProductListView(ListView):
     model = Product
-    # template_name = "list_view.html"
-    #
-    # def get_context_data(self, **kwargs):
-    #     context = super(ProductListView, self).get_context_data(**kwargs)
-    #     context["query_set"] = self.get_queryset()
-    #     return context
 
     def get_queryset(self, *args, **kwargs):
         qs = super(ProductListView, self).get_queryset(**kwargs)
-        # qs = qs.filter(title__icontains="Product")
         return qs
 
 
