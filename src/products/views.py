@@ -4,11 +4,12 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
-from digitalmarketplace.mixins import MultiSlugMixin, SubmitButtonMixin
+from digitalmarketplace.mixins import LoginRequiredMixin, MultiSlugMixin, SubmitButtonMixin
 from models import Product
+from mixins import ProductManagerMixin
 from forms import ProductAddForm, ProductModelForm
 
-class ProductCreateView(SubmitButtonMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, SubmitButtonMixin, CreateView):
     model = Product
     template_name = "form.html"
     form_class = ProductModelForm
@@ -23,20 +24,12 @@ class ProductCreateView(SubmitButtonMixin, CreateView):
         # Add all default users
         return valid_data
 
-class ProductUpdateView(SubmitButtonMixin, MultiSlugMixin, UpdateView):
+class ProductUpdateView(ProductManagerMixin, SubmitButtonMixin, MultiSlugMixin, UpdateView):
     model = Product
     template_name = "form.html"
     form_class = ProductModelForm
     success_url = "/products/"
     submit_button = "Update Product"
-
-    def get_object(self, *args, **kwargs):
-        user = self.request.user
-        obj = super(ProductUpdateView, self).get_object(*args, **kwargs)
-        if obj.user == user or user in obj.managers.all():
-            return obj
-        else:
-            raise Http404
 
 class ProductDetailView(MultiSlugMixin, DetailView):
     model = Product
