@@ -25,8 +25,8 @@ class ProductCreateView(LoginRequiredMixin, SubmitButtonMixin, CreateView):
         # Add all default users
         return valid_data
 
-    def get_success_url(self):
-        return reverse("product_list_view")
+    # def get_success_url(self):
+    #     return reverse("products:list")
 
 class ProductUpdateView(ProductManagerMixin, SubmitButtonMixin, MultiSlugMixin, UpdateView):
     model = Product
