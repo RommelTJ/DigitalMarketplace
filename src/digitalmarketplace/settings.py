@@ -144,3 +144,4 @@ STATICFILES_DIRS = (
 #Team doesn't manage
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn", "staticfiles") #CDN
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn", "media") #CDN
+PROTECTED_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn", "protected") #CDN
