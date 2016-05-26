@@ -1,12 +1,7 @@
 {% extends "base.html" %}
 
 {% block style %}
-.abc {
-  background-color: red;
-}
-.def {
-  background-color: green;
-}
+
 {% endblock style %}
 
 {% block content %}
@@ -20,7 +15,7 @@
 </p>
 <ul>
     {% for instance in object_list %}
-        <li class="{% cycle 'abc' 'def' %}">
+        <li>
             <a href="{{ instance.get_absolute_url }}">{{ instance.title }}</a><br/>
             {{ instance.description | truncatechars:100 }}<br/>
             {{ instance.price }}

@@ -10,7 +10,7 @@ from django.utils.text import slugify
 # Create your models here.
 
 def download_media_location(instance, filename):
-    return "%s/%s" %(instance.id, filename)
+    return "%s/%s" %(instance.slug, filename)
 
 class Product(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -53,6 +53,24 @@ def product_pre_save_receiver(sender, instance, *args, **kwargs):
         instance.slug = create_slug(instance)
 
 pre_save.connect(product_pre_save_receiver, sender=Product)
+
+def thumbnail_location(instance, filename):
+    return "%s/%s" %(instance.product.slug, filename)
+
+class Thumbnail(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    product = models.ForeignKey(Product)
+    height = models.CharField(max_length=20, null=True, blank=True)
+    width = models.CharField(max_length=20, null=True, blank=True)
+    media = models.ImageField(width_field="width",
+                              height_field="height",
+                              blank=True,
+                              null=True,
+                              upload_to=thumbnail_location,
+                              storage=FileSystemStorage(location=settings.PROTECTED_ROOT))
+
+    def __unicode__(self):
+        return str(self.media.path)
 
 class MyProducts(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
