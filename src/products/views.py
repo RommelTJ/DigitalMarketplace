@@ -1,9 +1,12 @@
+import os
+from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+from wsgiref.util import FileWrapper
 
 from digitalmarketplace.mixins import LoginRequiredMixin, MultiSlugMixin, SubmitButtonMixin
 from models import Product
@@ -37,6 +40,18 @@ class ProductUpdateView(ProductManagerMixin, SubmitButtonMixin, MultiSlugMixin, 
 
 class ProductDetailView(MultiSlugMixin, DetailView):
     model = Product
+
+class ProductDownloadView(MultiSlugMixin, DetailView):
+    model = Product
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        filepath = os.path.join(settings.PROTECTED_ROOT, obj.media.path)
+        wrapper = FileWrapper(file(filepath))
+        response = HttpResponse(wrapper, content_type="application/force-download")
+        response["Content-Disposition"] = "attachment; filename=%s" %(obj.media.name)
+        response["X-SendFile"] = str(obj.media.name)
+        return response
 
 class ProductListView(ListView):
     model = Product
