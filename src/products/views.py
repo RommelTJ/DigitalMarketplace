@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.detail import DetailView
@@ -69,6 +70,11 @@ class ProductListView(ListView):
 
     def get_queryset(self, *args, **kwargs):
         qs = super(ProductListView, self).get_queryset(**kwargs)
+        query = self.request.GET.get("q")
+        qs = qs.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query)
+        ).order_by("title")
         return qs
 
 
