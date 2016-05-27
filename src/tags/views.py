@@ -9,7 +9,6 @@ class TagDetailView(DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(TagDetailView, self).get_context_data(*args, **kwargs)
-        print self.get_object().products.all()
         return context
 
 class TagListView(ListView):
