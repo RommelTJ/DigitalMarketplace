@@ -11,6 +11,7 @@ from mimetypes import guess_type
 from wsgiref.util import FileWrapper
 
 from digitalmarketplace.mixins import LoginRequiredMixin, MultiSlugMixin, SubmitButtonMixin
+from tags.models import Tag
 from models import Product
 from mixins import ProductManagerMixin
 from forms import ProductAddForm, ProductModelForm
@@ -39,6 +40,22 @@ class ProductUpdateView(ProductManagerMixin, SubmitButtonMixin, MultiSlugMixin, 
     form_class = ProductModelForm
     # success_url = "/products/"
     submit_button = "Update Product"
+
+    def get_initial(self):
+        initial = super(ProductUpdateView, self).get_initial()
+        tags = self.get_object().tag_set.all()
+        initial["tags"] = ", ".join([x.title for x in tags])
+        return initial
+
+    def form_valid(self, form):
+        valid_data = super(ProductUpdateView, self).form_valid(form)
+        tags = form.cleaned_data.get("tags")
+        if tags:
+            tags_list = tags.split(",")
+            for tag in tags_list:
+                new_tag = Tag.objects.get_or_create(title=str(tag).strip())[0]
+                new_tag.products.add(self.get_object())
+        return valid_data
 
 class ProductDetailView(MultiSlugMixin, DetailView):
     model = Product

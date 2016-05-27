@@ -41,6 +41,7 @@ class ProductAddForm(forms.Form):
             raise forms.ValidationError("Title must be greater than 3 characters long.")
 
 class ProductModelForm(forms.ModelForm):
+    tags = forms.CharField(label="Related Tags", required=False)
     publish = forms.ChoiceField(widget=forms.RadioSelect, choices=PUBLISH_CHOICES, required=False)
     # description = forms.CharField(widget=forms.Textarea(
     #     attrs={

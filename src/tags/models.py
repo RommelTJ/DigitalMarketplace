@@ -22,7 +22,8 @@ class Tag(models.Model):
         return reverse(view_name, kwargs={"slug": self.slug})
 
 def tag_pre_save_receiver(sender, instance, *args, **kwargs):
+    instance.title = instance.title.lower()
     if not instance.slug:
         instance.slug = slugify(instance.title)
 
-pre_save.connect(tag_pre_save_receiver, sender=Product)
+pre_save.connect(tag_pre_save_receiver, sender=Tag)
