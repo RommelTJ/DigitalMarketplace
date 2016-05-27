@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock style %}
+
+{% block content %}
+
+<h1>Tags</h1>
+<ul>
+    {% for instance in object_list %}
+    <li>
+        <a href="{{ instance.get_absolute_url }}">{{ instance.title }}</a>
+    </li>
+    {% empty %}
+    <li>No tags yet.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
