@@ -3,7 +3,6 @@ from django.utils.text import slugify
 from models import Product
 
 PUBLISH_CHOICES = (
-    ('', ''),
     ('publish', 'Publish'),
     ('draft', 'Draft')
 )
