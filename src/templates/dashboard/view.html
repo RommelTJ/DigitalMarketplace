@@ -8,7 +8,7 @@
 <div>
     <h1>Top Tags</h1>
     {% for tag in top_tags %}
-    <li><a href="{{ tag.get_absolute_url }}">{{ tag.title }}</a></li>
+    <li><a href="{{ tag.get_absolute_url }}">{{ tag }}</a></li>
     {% endfor %}
 </div>
 {% endblock content %}
