@@ -10,6 +10,7 @@ from django.views.generic.list import ListView
 from mimetypes import guess_type
 from wsgiref.util import FileWrapper
 
+from analytics.models import TagView
 from digitalmarketplace.mixins import LoginRequiredMixin, MultiSlugMixin, SubmitButtonMixin
 from tags.models import Tag
 from models import Product
@@ -69,6 +70,16 @@ class ProductUpdateView(ProductManagerMixin, SubmitButtonMixin, MultiSlugMixin, 
 
 class ProductDetailView(MultiSlugMixin, DetailView):
     model = Product
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ProductDetailView, self).get_context_data(*args, **kwargs)
+        obj = self.get_object()
+        tags = obj.tag_set.all()
+        for tag in tags:
+            new_view = TagView.objects.get_or_create(user=self.request.user, tag=tag)[0]
+            new_view.count += 1
+            new_view.save()
+        return context
 
 class ProductDownloadView(MultiSlugMixin, DetailView):
     model = Product
