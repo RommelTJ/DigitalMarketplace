@@ -9,7 +9,7 @@
                 method: "POST",
                 url: "{% url 'test' %}",
                 data: {
-                    csrfmiddlewaretoken: "{{ csrf_token }}",
+//                    csrfmiddlewaretoken: "{{ csrf_token }}",
                     testData: "Hello new data",
                 },
                 success: function (data, textStatus, jqXHR) {
