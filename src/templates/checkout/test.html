@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+<script>
+    $(document).ready(function(){
+        {% block jquery %}
+        $("#test-call").click(function (event) {
+            event.preventDefault();
+            $.ajax({
+                method: "POST",
+                url: "{% url 'test' %}",
+                data: {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    testData: "Hello new data",
+                },
+                success: function (data, textStatus, jqXHR) {
+                    if (data.works) {
+                        $("#content").html("Time is: "+data.time);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                }
+            });
+        });
+        {% endblock jquery %}
+    });
+</script>
+
+{% block content %}
+<a id="test-call" href="#">Test AJAX</a>
+<div id="content"></div>
+{% endblock %}
