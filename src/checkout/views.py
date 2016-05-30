@@ -8,6 +8,11 @@ from django.shortcuts import render
 class CheckoutTestView(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
+            if not request.user.is_authenticated():
+                data = {
+                    "works": False,
+                }
+                return JsonResponse(data, status=403)
             data = {
                 "works": True,
                 "time": datetime.datetime.now(),

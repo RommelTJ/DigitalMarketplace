@@ -5,21 +5,27 @@
         {% block jquery %}
         $("#test-call").click(function (event) {
             event.preventDefault();
-            $.ajax({
+            var request = $.ajax({
                 method: "POST",
                 url: "{% url 'test' %}",
                 data: {
-//                    csrfmiddlewaretoken: "{{ csrf_token }}",
                     testData: "Hello new data",
-                },
-                success: function (data, textStatus, jqXHR) {
-                    if (data.works) {
-                        $("#content").html("Time is: "+data.time);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
                 }
             });
+            request.done(function (data) {
+                if (data.works) {
+                    $("#content").html("Time is: " + data.time);
+                }
+            });
+            request.fail(function (jqXHR, textStatus) {
+                if (jqXHR.status == 404) {
+                    alert("Page not found!");
+                } else if (jqXHR.status == 403){
+                    alert("You must be logged in to view this.");
+                } else {
+                    alert("There was an error with your request.");
+                }
+            })
         });
         {% endblock jquery %}
     });
