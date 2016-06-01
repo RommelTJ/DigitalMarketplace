@@ -5,6 +5,7 @@
         {% block jquery %}
         $("#purchase-btn").click(function (event) {
             event.preventDefault();
+            var purchaseBtn = $(this)
             $("#dialog-confirm").fadeIn("300");
             $("#dialog-confirm").dialog({
                resizable: false,
@@ -24,7 +25,9 @@
                                 }
                             });
                             request.done(function (data) {
-                                console.log("working...");
+                                purchaseBtn.before("<p><a href='" + data.download + "'>Download</a></p>");
+                                purchaseBtn.before("<p><a href='" + data.preview + "'>Preview</a></p>");
+                                purchaseBtn.fadeOut(100);
                             });
                             request.fail(function (jqXHR, textStatus) {
                                 if (jqXHR.status == 404) {
