@@ -4,4 +4,17 @@
 
 <h1>Seller Dashboard</h1>
 
+<p>Rules of the Marketplace<br>
+    <form method="post" action="">
+    {% csrf_token %}
+    <ol>
+        <li>Be Kind</li>
+        <li>Sell Well </li>
+        <li>Don't Steal</li>
+    </ol>
+    {{ form.as_p }} <br/>
+    <input type="submit" />
+    </form>
+</p>
+
 {% endblock %}
