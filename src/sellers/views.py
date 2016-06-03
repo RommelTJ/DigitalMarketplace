@@ -1,20 +1,53 @@
 from django.shortcuts import render
 from django.views.generic import View
+from django.views.generic.edit import FormMixin
 
 from digitalmarketplace.mixins import LoginRequiredMixin
 from .forms import NewSellerForm
+from .models import SellerAccount
 
 # Create your views here.
 
-class SellerDashboard(LoginRequiredMixin, View):
+class SellerDashboard(FormMixin, LoginRequiredMixin, View):
+    form_class = NewSellerForm
+    success_url = "/seller/"
 
     def post(self, request, *args, **kwargs):
-        form = NewSellerForm(request.POST)
+        form = self.get_form()
         if form.is_valid():
-            print "Make user apply model"
-        return render(request, "sellers/dashboard.html", {"form":form})
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get(self, request, *args, **kwargs):
-        form = NewSellerForm()
-        return render(request, "sellers/dashboard.html", {"form":form})
+        apply_form = NewSellerForm()
+        account = SellerAccount.objects.filter(user=self.request.user)
+        exists = account.exists()
+        active = None
+        context = {}
+
+        if exists:
+            account = account.first()
+            active = account.active
+
+        #Show form if account doesn't exist
+        #Show pending if account exists and not active
+        #Show dashboard data if account exists and active.
+        if not exists and not active:
+            context["title"] = "Apply for Account"
+            context["apply_form"] = apply_form
+
+        elif exists and not active:
+            context["title"] = "Account Pending"
+        elif exists and active:
+            context["title"] = "Account Dashboard"
+        else:
+            pass
+
+        return render(request, "sellers/dashboard.html", context)
+
+    def form_valid(self, form):
+        valid_data = super(SellerDashboard, self).form_valid(form)
+        obj = SellerAccount.objects.create(user=self.request.user)
+        return valid_data
 

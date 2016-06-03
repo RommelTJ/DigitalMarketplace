@@ -2,7 +2,9 @@
 
 {% block content %}
 
-<h1>Seller Dashboard</h1>
+<h1>{{ title }}</h1>
+
+{% if apply_form %}
 
 <p>Rules of the Marketplace<br>
     <form method="post" action="">
@@ -12,9 +14,11 @@
         <li>Sell Well </li>
         <li>Don't Steal</li>
     </ol>
-    {{ form.as_p }} <br/>
+    {{ apply_form }} <br/>
     <input type="submit" />
     </form>
 </p>
+
+{% endif %}
 
 {% endblock %}
