@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.views.generic.edit import FormMixin
 
+from billing.models import Transaction
 from digitalmarketplace.mixins import LoginRequiredMixin
+from products.models import Product
 from .forms import NewSellerForm
 from .models import SellerAccount
 
@@ -30,17 +32,16 @@ class SellerDashboard(FormMixin, LoginRequiredMixin, View):
             account = account.first()
             active = account.active
 
-        #Show form if account doesn't exist
-        #Show pending if account exists and not active
-        #Show dashboard data if account exists and active.
         if not exists and not active:
             context["title"] = "Apply for Account"
             context["apply_form"] = apply_form
-
         elif exists and not active:
             context["title"] = "Account Pending"
         elif exists and active:
-            context["title"] = "Account Dashboard"
+            context["title"] = "Seller Dashboard"
+            products = Product.objects.filter(seller=account)
+            context["products"] = products
+            context["transactions"] = Transaction.objects.filter(product__in=products)
         else:
             pass
 
