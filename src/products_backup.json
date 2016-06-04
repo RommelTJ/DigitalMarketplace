@@ -1,0 +1,121 @@
+[
+{
+    "model": "products.product",
+    "pk": 4,
+    "fields": {
+        "seller": 2,
+        "media": "product-1/Gigya_Replacement.png",
+        "title": "Product 1",
+        "slug": "product-1",
+        "description": "Product 1",
+        "price": "9.99",
+        "sale_active": false,
+        "sale_price": "6.99"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 5,
+    "fields": {
+        "seller": 2,
+        "media": "car/StarCitizenBebop.jpg",
+        "title": "Cars",
+        "slug": "car",
+        "description": "Cars",
+        "price": "9.99",
+        "sale_active": false,
+        "sale_price": "6.99"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 6,
+    "fields": {
+        "seller": 2,
+        "media": "",
+        "title": "new product 123",
+        "slug": "new-product-123",
+        "description": "asdg l;asdgjk",
+        "price": "9.99",
+        "sale_active": true,
+        "sale_price": "6.99"
+    }
+},
+{
+    "model": "products.thumbnail",
+    "pk": 10,
+    "fields": {
+        "product": 4,
+        "type": "hd",
+        "height": "260",
+        "width": "500",
+        "media": "product-1/Gigya_Replacement.png"
+    }
+},
+{
+    "model": "products.thumbnail",
+    "pk": 11,
+    "fields": {
+        "product": 4,
+        "type": "sd",
+        "height": "182",
+        "width": "350",
+        "media": "product-1/Gigya_Replacement_iJTwqRc.png"
+    }
+},
+{
+    "model": "products.thumbnail",
+    "pk": 12,
+    "fields": {
+        "product": 4,
+        "type": "micro",
+        "height": "78",
+        "width": "150",
+        "media": "product-1/Gigya_Replacement_eB9Sc1v.png"
+    }
+},
+{
+    "model": "products.thumbnail",
+    "pk": 13,
+    "fields": {
+        "product": 5,
+        "type": "hd",
+        "height": "281",
+        "width": "500",
+        "media": "car/StarCitizenBebop.jpg"
+    }
+},
+{
+    "model": "products.thumbnail",
+    "pk": 14,
+    "fields": {
+        "product": 5,
+        "type": "sd",
+        "height": "196",
+        "width": "350",
+        "media": "car/StarCitizenBebop_t7ZaYjJ.jpg"
+    }
+},
+{
+    "model": "products.thumbnail",
+    "pk": 15,
+    "fields": {
+        "product": 5,
+        "type": "micro",
+        "height": "84",
+        "width": "150",
+        "media": "car/StarCitizenBebop_gu0vEWu.jpg"
+    }
+},
+{
+    "model": "products.myproducts",
+    "pk": 3,
+    "fields": {
+        "user": 1,
+        "products": [
+            5,
+            6
+        ]
+    }
+}
+]
