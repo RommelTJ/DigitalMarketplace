@@ -41,7 +41,7 @@ class SellerDashboard(FormMixin, LoginRequiredMixin, View):
             context["title"] = "Seller Dashboard"
             products = Product.objects.filter(seller=account)
             context["products"] = products
-            context["transactions"] = Transaction.objects.filter(product__in=products)
+            context["transactions"] = Transaction.objects.filter(product__in=products)[:6]
         else:
             pass
 
