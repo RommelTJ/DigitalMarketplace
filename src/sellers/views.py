@@ -6,23 +6,21 @@ from django.views.generic.list import ListView
 from billing.models import Transaction
 from digitalmarketplace.mixins import LoginRequiredMixin
 from products.models import Product
+
 from .forms import NewSellerForm
+from .mixins import SellerAccountMixin
 from .models import SellerAccount
 
 # Create your views here.
 
-class SellerTransactionListView(ListView):
+class SellerTransactionListView(SellerAccountMixin, ListView):
     model = Transaction
     template_name = "sellers/transaction_list_view.html"
 
     def get_queryset(self):
-        account = SellerAccount.objects.filter(user=self.request.user)
-        if account.exists():
-            products = Product.objects.filter(seller=account)
-            return Transaction.objects.filter(product__in=products)
-        return []
+        return self.get_transactions()
 
-class SellerDashboard(FormMixin, LoginRequiredMixin, View):
+class SellerDashboard(FormMixin, SellerAccountMixin, View):
     form_class = NewSellerForm
     success_url = "/seller/"
 
@@ -35,13 +33,12 @@ class SellerDashboard(FormMixin, LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         apply_form = NewSellerForm()
-        account = SellerAccount.objects.filter(user=self.request.user)
-        exists = account.exists()
+        account = self.get_account()
+        exists = account
         active = None
         context = {}
 
         if exists:
-            account = account.first()
             active = account.active
 
         if not exists and not active:
@@ -51,9 +48,8 @@ class SellerDashboard(FormMixin, LoginRequiredMixin, View):
             context["title"] = "Account Pending"
         elif exists and active:
             context["title"] = "Seller Dashboard"
-            products = Product.objects.filter(seller=account)
-            context["products"] = products
-            context["transactions"] = Transaction.objects.filter(product__in=products)[:6]
+            context["products"] = self.get_products()
+            context["transactions"] = self.get_transactions()[:6]
         else:
             pass
 
