@@ -44,7 +44,6 @@ class ProductUpdateView(ProductManagerMixin, SubmitButtonMixin, MultiSlugMixin, 
     model = Product
     template_name = "form.html"
     form_class = ProductModelForm
-    # success_url = "/products/"
     submit_button = "Update Product"
 
     def get_initial(self):
