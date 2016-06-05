@@ -12,12 +12,14 @@ from wsgiref.util import FileWrapper
 
 from analytics.models import TagView
 from digitalmarketplace.mixins import LoginRequiredMixin, MultiSlugMixin, SubmitButtonMixin
+from sellers.mixins import SellerAccountMixin
 from tags.models import Tag
-from models import Product
-from mixins import ProductManagerMixin
-from forms import ProductAddForm, ProductModelForm
 
-class ProductCreateView(LoginRequiredMixin, SubmitButtonMixin, CreateView):
+from .models import Product
+from .mixins import ProductManagerMixin
+from .forms import ProductAddForm, ProductModelForm
+
+class ProductCreateView(SellerAccountMixin, SubmitButtonMixin, CreateView):
     model = Product
     template_name = "form.html"
     form_class = ProductModelForm
@@ -25,11 +27,9 @@ class ProductCreateView(LoginRequiredMixin, SubmitButtonMixin, CreateView):
     submit_button = "Add Product"
 
     def form_valid(self, form):
-        user = self.request.user
-        form.instance.user = user
+        seller = self.get_account()
+        form.instance.seller = seller
         valid_data = super(ProductCreateView, self).form_valid(form)
-        form.instance.managers.add(user)
-        # Add all default users
         tags = form.cleaned_data.get("tags")
         if tags:
             tags_list = tags.split(",")
@@ -39,8 +39,6 @@ class ProductCreateView(LoginRequiredMixin, SubmitButtonMixin, CreateView):
                     new_tag.products.add(form.instance)
         return valid_data
 
-    # def get_success_url(self):
-    #     return reverse("products:list")
 
 class ProductUpdateView(ProductManagerMixin, SubmitButtonMixin, MultiSlugMixin, UpdateView):
     model = Product
@@ -100,6 +98,21 @@ class ProductDownloadView(MultiSlugMixin, DetailView):
             return response
         else:
             raise Http404
+
+class SellerProductListView(SellerAccountMixin, ListView):
+    model = Product
+    template_name = "sellers/product_list_view.html"
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super(SellerProductListView, self).get_queryset(**kwargs)
+        qs = qs.filter(seller=self.get_account())
+        query = self.request.GET.get("q")
+        if query:
+            qs = qs.filter(
+                Q(title__icontains=query) |
+                Q(description__icontains=query)
+            ).order_by("title")
+        return qs
 
 class ProductListView(ListView):
     model = Product
