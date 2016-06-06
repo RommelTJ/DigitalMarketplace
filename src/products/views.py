@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.db.models import Q
+from django.db.models import Count, Min, Max, Q, Sum, Avg
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
@@ -112,7 +112,13 @@ class ProductDetailView(MultiSlugMixin, DetailView):
         context = super(ProductDetailView, self).get_context_data(*args, **kwargs)
         obj = self.get_object()
         tags = obj.tag_set.all()
+        rating_avg = obj.productrating_set.aggregate(Avg("rating"), Count("rating"))
+        context["rating_avg"] = rating_avg
+
         if self.request.user.is_authenticated():
+            rating_obj = ProductRating.objects.filter(user=self.request.user, product=obj)
+            if rating_obj.exists():
+                context["my_rating"] = rating_obj.first().rating
             for tag in tags:
                 TagView.objects.add_count(self.request.user, tag)
         return context
