@@ -2,8 +2,9 @@ import os
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
+from django.views.generic import View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
@@ -11,13 +12,52 @@ from mimetypes import guess_type
 from wsgiref.util import FileWrapper
 
 from analytics.models import TagView
-from digitalmarketplace.mixins import LoginRequiredMixin, MultiSlugMixin, SubmitButtonMixin
+from digitalmarketplace.mixins import (
+    AjaxRequiredMixin,
+    LoginRequiredMixin,
+    MultiSlugMixin,
+    SubmitButtonMixin,
+)
 from sellers.mixins import SellerAccountMixin
 from tags.models import Tag
 
-from .models import Product
+from .models import Product, ProductRating
 from .mixins import ProductManagerMixin
 from .forms import ProductAddForm, ProductModelForm
+
+class ProductRatingAjaxView(AjaxRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            return JsonResponse({}, status=403)
+        user = request.user
+        product_id = request.POST.get("product_id")
+        rating_value = request.POST.get("rating_value")
+        exists = Product.objects.filter(id=product_id).exists()
+        if not exists:
+            return JsonResponse({}, status=404)
+        try:
+            product_obj = Product.object.get(id=product_id)
+        except:
+            product_obj = Product.objects.filter(id=product_id).first()
+
+        rating_obj, rating_obj_created = ProductRating.objects.get_or_create(user=user, product=product_obj)
+        try:
+            rating_obj = ProductRating.objects.get(user=user, product=product_obj)
+        except ProductRating.MultipleObjectsReturned:
+            rating_obj = ProductRating.objects.filter(user=user, product=product_obj).first()
+        except:
+            rating_obj = ProductRating.objects.create(user=user, product=product_obj)
+        rating_obj.rating = int(rating_value)
+        my_products = user.myproducts.products.all()
+        if product_obj in my_products:
+            rating_obj.verified = True
+        #Verify ownership
+
+        rating_obj.save()
+        data = {
+            "success": True,
+        }
+        return JsonResponse(data)
 
 class ProductCreateView(SellerAccountMixin, SubmitButtonMixin, CreateView):
     model = Product

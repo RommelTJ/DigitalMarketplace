@@ -146,7 +146,6 @@ class MyProducts(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
     products = models.ManyToManyField(Product, blank=True)
 
-
     def __unicode__(self):
         return "%s" %(self.products.count())
 
@@ -154,30 +153,11 @@ class MyProducts(models.Model):
         verbose_name = "My Products"
         verbose_name_plural = "My Products"
 
+class ProductRating(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    product = models.ForeignKey(Product)
+    rating = models.IntegerField(null=True, blank=True)
+    verified = models.BooleanField(default=False)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def __unicode__(self):
+        return str(self.rating)

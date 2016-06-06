@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Product, MyProducts, Thumbnail
+from .models import Product, ProductRating, MyProducts, Thumbnail
 
 class ThumbnailInline(admin.TabularInline):
     extra = 1
@@ -17,5 +17,6 @@ class ProductAdmin(admin.ModelAdmin):
         model = Product
 
 admin.site.register(Product, ProductAdmin)
+admin.site.register(ProductRating)
 admin.site.register(MyProducts)
 admin.site.register(Thumbnail)
