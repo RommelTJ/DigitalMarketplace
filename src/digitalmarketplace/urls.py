@@ -5,6 +5,7 @@ from django.contrib import admin
 
 from checkout.views import CheckoutTestView, CheckoutAjaxView
 from dashboard.views import DashboardView
+from products.views import UserLibraryListView
 from sellers.views import SellerDashboard
 
 urlpatterns = [
@@ -14,6 +15,7 @@ urlpatterns = [
     url(r'^products/', include("products.urls", namespace='products')),
     url(r'^seller/', include("sellers.urls", namespace='sellers')),
     url(r'^tags/', include("tags.urls", namespace='tags')),
+    url(r'^library/', UserLibraryListView.as_view(), name='library'),
 ]
 
 if settings.DEBUG:
