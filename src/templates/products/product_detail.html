@@ -141,7 +141,7 @@
 <div class="col-primary pull-left">
     <h1>Product: {{ object.title }}</h1>
     <p>{{ object.description }}</p>
-    <p>{{ object.price }}</p>
+    <p>{{ object.get_html_price|safe }}</p>
     <p>Purchases: {{ object.transaction_set.all.count }}</p>
 
     {% for img in object.thumbnail_set.all %}
@@ -150,14 +150,18 @@
 </div>
 
 <div class="col-sidebar pull-right">
-    {% if request.user.is_authenticated and object.media and object in request.user.myproducts.products.all%}
-        <p><a href="{{ object.get_download }}">Download</a></p>
-        <p><a href="{{ object.get_download }}?preview=True">Preview</a></p>
+    {% if request.user.is_authenticated and object in request.user.myproducts.products.all %}
+        {% if object.media %}
+            <p><a href="{{ object.get_download }}">Download</a></p>
+            <p><a href="{{ object.get_download }}?preview=True">Preview</a></p>
+        {% else %}
+            <p>Product is coming soon for download</p>
+        {% endif %}
     {% else %}
-        <p><a id='purchase-btn' href="#">Purchase</a></p>
-    <div id="dialog-confirm" title="Confirm Purchase" style="display: none;">
-        <p>Your card will be charged after you agree below.</p>
-    </div>
+        <p><a id='purchase-btn' href="#">{% if object.media %}Purchase{% else %}Pre-Order{% endif %}</a></p>
+        <div id="dialog-confirm" title="Confirm Purchase" style="display: none;">
+            <p>Your card will be charged after you agree below.</p>
+        </div>
     {% endif %}
 
     <p>
